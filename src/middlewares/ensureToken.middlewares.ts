@@ -5,7 +5,7 @@ import { AppError } from '../error'
 
 import 'dotenv/config'
 
-export const ensureTokenExistsMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const ensureTokenIsValidMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     let token = req.headers.authorization
 
     if(!token) {
