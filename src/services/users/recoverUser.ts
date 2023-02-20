@@ -1,8 +1,27 @@
-import { QueryConfig } from 'pg'
+import { QueryConfig, QueryResult } from 'pg'
 import { client } from '../../database'
+import { AppError } from '../../error'
 import { IUserResponse, IUserResult } from '../../interfaces/users.interfaces'
-export const recoverUserService = async (userId: number): Promise<IUserResponse> => {
-    const queryString: string = `
+export const recoverUserService = async (paramsId: number): Promise<IUserResponse> => {
+    let queryString: string = `
+        SELECT
+            active
+        FROM 
+            users
+        WHERE
+            id = $1;
+    `
+
+    let queryConfig: QueryConfig = {
+        text: queryString,
+        values: [paramsId]
+    }
+
+    const queryActiveResult: QueryResult = await client.query(queryConfig)
+
+    if(queryActiveResult.rows[0].active === true) throw new AppError('User already active', 400)
+
+    queryString = `
         UPDATE
             users
         SET(active) = ROW(TRUE)
@@ -12,9 +31,9 @@ export const recoverUserService = async (userId: number): Promise<IUserResponse>
             id, name, email, active, admin;
     `
 
-    const queryConfig: QueryConfig = {
+    queryConfig = {
         text: queryString,
-        values: [userId]
+        values: [paramsId]
     }
 
     const queryResult: IUserResult = await client.query(queryConfig)

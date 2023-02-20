@@ -51,9 +51,9 @@ export const softDeleteUserControllers = async (req: Request, res: Response): Pr
 }
 
 export const recoverUserControllers = async (req: Request, res: Response): Promise<Response> => {
-    const userId: number = req.user.id
+    const paramsId: number = parseInt(req.params.id)
 
-    const recoveredUser = await recoverUserService(userId)
+    const recoveredUser = await recoverUserService(paramsId)
 
     return res.status(200).json(recoveredUser)
 }
