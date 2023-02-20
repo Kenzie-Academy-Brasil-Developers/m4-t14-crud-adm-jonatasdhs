@@ -8,30 +8,10 @@ import { IUserRequest, IUserResponse, IUserResult } from "../../interfaces/users
 
 export const createUsersService = async (userData: IUserRequest): Promise<IUserResponse> => {
 
-    let queryString: string = format(`
-        SELECT
-            *
-        FROM
-            users
-        WHERE
-            email = $1;    
-    `)
-
-    const queryConfig: QueryConfig = {
-        text: queryString,
-        values: [userData.email]
-    }
-
-    const queryResultUserExists: QueryResult = await client.query(queryConfig)
-    
-    if(queryResultUserExists.rowCount > 0) {
-        throw new AppError('Email alread exists', 409)
-    }
-
     const hashedPassword = await hash(userData.password, 10)
     userData.password = hashedPassword
 
-    queryString = format(
+    const queryString = format(
         `
         INSERT INTO 
             users(%I)

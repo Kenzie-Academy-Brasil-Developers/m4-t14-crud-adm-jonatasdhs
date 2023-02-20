@@ -1,5 +1,4 @@
-import { Client, QueryConfig, QueryResult } from "pg"
-import format from "pg-format"
+import { QueryConfig, QueryResult } from "pg"
 import { client } from "../../database"
 import { AppError } from '../../error'
 import { ILoginRequest, IToken } from "../../interfaces/login.interfaces"
@@ -33,7 +32,10 @@ export const createLoginService = async (loginData: ILoginRequest): Promise<ITok
     }
 
     const token: string = sign(
-        { email: user.rows[0].password },
+        {   
+            email: user.rows[0].email,
+            admin: user.rows[0].admin 
+        },
         String(process.env.SECRET_KEY),
         {expiresIn: '24h', subject: String(user.rows[0].id)}
     )
